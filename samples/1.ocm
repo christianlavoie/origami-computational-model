@@ -1,0 +1,4 @@
+(defpt pt1 0.0 1.0)
+(defpt pt2 1.0 0.0)
+
+(o1 pt1 pt2)

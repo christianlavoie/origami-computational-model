@@ -1,0 +1,4 @@
+.cabal-sandbox
+bin
+dist
+*.sw[ponm]
