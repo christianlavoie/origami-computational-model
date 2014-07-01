@@ -68,8 +68,8 @@ p_identifier = do
 
 p_tokens :: Parsec.Parser [TokenPos]
 p_tokens = do
-    tokens <- Parsec.spaces *> Parsec.many (p_token <* Parsec.spaces)
-    Parsec.eof
+    Parsec.spaces
+    tokens <- Parsec.sepEndBy1 p_token $ Parsec.choice [Parsec.spaces, Parsec.eof]
     return tokens
   where p_token = Parsec.choice [ p_chars, p_reserved_keywords, p_double, p_identifier ]
 

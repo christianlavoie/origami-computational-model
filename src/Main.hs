@@ -45,9 +45,6 @@ compilerOpts argv =
 -- Actual program
 main :: IO ()
 main = do
-    content <- getContents
-
-    -- Parse args
     args <- getArgs
     (opts, leftover) <- compilerOpts args
 
@@ -55,7 +52,13 @@ main = do
         [] -> return ()
         _ -> error $ "Unknown args " ++ show leftover
 
-    -- Tokenize
+    content <- case optInput opts of
+      Nothing -> getContents
+      Just f -> error "Unimplemented. Use stdin."
+
+
+    when (optVerbose opts) $ putStrLn "Tokenizing..."
+
     tokenized <- case tokenize "(unknown)" content of
         Left te -> error $ show te
         Right tokenized_ -> return tokenized_
@@ -65,7 +68,9 @@ main = do
         mapM_ putStr [ printf "\t%s\n" (show toks) | toks <- tokenized ]
         putStrLn ""
 
-    -- Parse
+
+    when (optVerbose opts) $ putStrLn "Parsing..."
+
     parsed <- case parseOCM tokenized of
         Left pe -> error $ show pe
         Right parsed_ -> return parsed_
