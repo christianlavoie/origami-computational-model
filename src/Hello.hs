@@ -2,9 +2,7 @@ module Main where
 
 
 import qualified Text.Parsec as Parsec
-import qualified Text.Parsec.Language as Parsec
 import qualified Text.Parsec.String as Parsec
-import qualified Text.Parsec.Token as Parsec
 
 
 p_hello :: Parsec.Parser String
@@ -17,10 +15,10 @@ p_world = Parsec.string "World"
 p_hello_world :: Parsec.Parser String
 p_hello_world = do
     str1 <- p_hello
-    Parsec.char ','
+    _ <- Parsec.char ','
     Parsec.spaces
     str2 <- p_world
-    Parsec.char '!'
+    _ <- Parsec.char '!'
     Parsec.spaces
     Parsec.eof
     return $ str1 ++ " " ++ str2

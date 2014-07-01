@@ -1,8 +1,6 @@
 module Tokenizer (tokenize) where
 
 
-import Control.Applicative
-
 import qualified Text.Parsec as Parsec
 import qualified Text.Parsec.Language as Parsec
 import qualified Text.Parsec.String as Parsec

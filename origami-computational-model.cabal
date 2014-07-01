@@ -18,8 +18,9 @@ executable hello-world
     main-is:
         Hello.hs
 
-    other-extensions:
-        TemplateHaskell
+    ghc-options:
+        -Wall
+        -Werror
 
     build-depends:
         base >=4.6 && <4.7,
@@ -34,6 +35,10 @@ executable hello-world
 executable origami-computational-model
     main-is:
         Main.hs
+
+    ghc-options:
+        -Wall
+        -Werror
 
     other-extensions:
         TemplateHaskell

@@ -1,7 +1,5 @@
 module Main where
 
-import Control.Lens
-
 import Control.Monad (when)
 import Data.Maybe (fromMaybe)
 import System.Environment (getArgs)
@@ -11,7 +9,6 @@ import qualified System.Console.GetOpt as GetOpt
 
 import Parser
 import Tokenizer
-import Types
 
 
 -- Options parsing
@@ -54,7 +51,7 @@ main = do
 
     content <- case optInput opts of
       Nothing -> getContents
-      Just f -> error "Unimplemented. Use stdin."
+      Just _ -> error "Unimplemented. Use stdin."
 
 
     when (optVerbose opts) $ putStrLn "Tokenizing..."
