@@ -16,6 +16,9 @@ import Types
 type Parser a = Parsec.Parsec [TokenPos] ParserState a
 
 
+(<?>) :: String -> Parser a -> Parser a
+(<?>) = flip (Parsec.<?>)
+
 -- Helpers
 posOf :: (a, b, c) -> c
 posOf (_, _, pos) = pos
@@ -43,43 +46,52 @@ parens = Parsec.between (match TokenLeftParen ()) (match TokenRightParen ())
 
 -- Parsers
 p_defpt :: Parser ()
-p_defpt = parens $ do
-    match TokenDefPoint ()
-    ident <- matchIdentifier
-    p1 <- matchDouble
-    p2 <- matchDouble
-    let point = Point p1 p2
-    Parsec.modifyState $ \state -> state & psPoints %~ Data.Map.insert ident point
+p_defpt = "Point definition" <?> p
+  where p = parens $ do
+                match TokenDefPoint ()
+                ident <- matchIdentifier
+                p1 <- matchDouble
+                p2 <- matchDouble
+                let point = Point p1 p2
+                Parsec.modifyState (update ident point)
+        update ident point state = state & psPoints %~ Data.Map.insert ident point
 
 p_defln :: Parser ()
-p_defln = parens $ do
-    match TokenDefLine ()
-    ident <- matchIdentifier
-    a <- matchDouble
-    b <- matchDouble
-    c <- matchDouble
-    let line = Line a b c
-    Parsec.modifyState $ \state -> state & psLines %~ Data.Map.insert ident line
+p_defln = "Line definition" <?> p
+  where p = parens $ do
+                match TokenDefLine ()
+                ident <- matchIdentifier
+                a <- matchDouble
+                b <- matchDouble
+                c <- matchDouble
+                let line = Line a b c
+                Parsec.modifyState (update ident line)
+        update ident line state = state & psLines %~ Data.Map.insert ident line
 
 p_o1 :: Parser ()
-p_o1 = parens $ do
-    match TokenO1 ()
-    p1i <- matchIdentifier
-    p2i <- matchIdentifier
+p_o1 = "Axiom O1" <?> p
+  where p = parens $ do
+              match TokenO1 ()
+              p1i <- matchIdentifier
+              p2i <- matchIdentifier
 
-    state <- Parsec.getState
+              state <- Parsec.getState
 
-    case (Data.Map.lookup p1i $ state ^. psPoints, 
-          Data.Map.lookup p2i $ state ^. psPoints) of
-        (Nothing, Nothing) -> fail $ printf "O1 could not find either %s or %s points" p1i p2i
-        (_,       Nothing) -> fail $ printf "O2 could not find first point %s" p1i
-        (Nothing, _      ) -> fail $ printf "O2 could not find second point %s" p2i
-        (Just p1, Just p2) -> do
-            let command = O1 p1 p2
-            Parsec.modifyState $ \state -> state & psCommands %~ (:) command
+              p1 <- case Data.Map.lookup p1i $ state ^. psPoints of
+                  Nothing -> fail $ printf "O1 could not find first point %s" p1i
+                  Just p -> return p
+
+              p2 <- case Data.Map.lookup p2i $ state ^. psPoints of
+                  Nothing -> fail $ printf "O1 could not find second point %s" p2i
+                  Just p -> return p
+
+              let command = O1 p1 p2
+              Parsec.modifyState (update command)
+        update command state = state & psCommands %~ (:) command
+
 
 p_ocm_program :: Parser OCMProgram
-p_ocm_program = do
+p_ocm_program = "Full OCM program" <?> do
     Parsec.many $ Parsec.choice $ map Parsec.try [p_defpt, p_defln, p_o1]
     Parsec.eof
     state <- Parsec.getState
