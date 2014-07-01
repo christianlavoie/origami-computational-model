@@ -32,8 +32,8 @@ keywords = [ (TokenO1, "o1"),
 lexer :: Parsec.TokenParser ()
 lexer = Parsec.makeTokenParser Parsec.haskellDef {
     Parsec.commentStart = "/*",
-    Parsec.commentEnd = "",
-    Parsec.commentLine = "",
+    Parsec.commentEnd = "*/",
+    Parsec.commentLine = "#",
     Parsec.nestedComments = False,
     Parsec.reservedNames = map snd keywords,
     Parsec.reservedOpNames = [] }

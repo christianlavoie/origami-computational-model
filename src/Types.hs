@@ -10,6 +10,7 @@ import Text.Parsec.Pos (SourcePos)
 import qualified Data.Map
 
 
+-- (x, y)
 data Point = Point {
     _x :: Double,
     _y :: Double }
@@ -18,6 +19,7 @@ data Point = Point {
 $(makeLenses ''Point)
 
 
+-- Ax + By + C = 0
 data Line = Line {
     _a :: Double,
     _b :: Double,
